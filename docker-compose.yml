@@ -1,0 +1,23 @@
+version: '2'
+services:
+  nightmare-puppeteer-server:
+    image: kurebio/nightmare-puppeteer-server
+    ports:
+      - 80
+    networks:
+      - front-tier
+  nightmare-puppeteer-server-lb:
+    image: dockercloud/haproxy
+    links:
+      - nightmare-puppeteer-server
+    ports:
+      - "8300:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - "TIMEOUT=connect 5000, client 0, server 0"
+    networks:
+      - front-tier
+networks:
+  front-tier:
+    driver: bridge
